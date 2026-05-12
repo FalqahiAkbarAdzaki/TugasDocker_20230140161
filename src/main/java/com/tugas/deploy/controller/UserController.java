@@ -1,6 +1,7 @@
 package com.tugas.deploy.controller;
 
 import com.tugas.deploy.model.User;
+import com.tugas.deploy.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +12,15 @@ import java.util.List;
 @Controller
 public class UserController {
 
-    // Simpan data di memori (Temporary)
-    private static List<User> daftarMahasiswa = new ArrayList<>();
+    private final String USERNAME = "admin";
+    private final String PASSWORD = "20230140161";
+
+    private final UserService userService;
+
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
+
 
     @GetMapping("/")
     public String showLoginPage() {
@@ -31,9 +39,11 @@ public class UserController {
 
     @GetMapping("/home")
     public String showHomePage(Model model) {
-        model.addAttribute("listMhs", daftarMahasiswa);
+        model.addAttribute("dataList", userService.getAllUsers());
         return "home";
     }
+
+    // ================== CREATE ========================
 
     @GetMapping("/form")
     public String showFormPage(Model model) {
@@ -41,14 +51,11 @@ public class UserController {
         return "form";
     }
 
-    @PostMapping("/save")
-    public String saveUser(@ModelAttribute User user) {
-        daftarMahasiswa.add(user);
+    @PostMapping("/submit")
+    public String submitForm(@ModelAttribute User user) {
+        userService.addUser(user);
         return "redirect:/home";
     }
 
-    @GetMapping("/logout")
-    public String logout() {
-        return "redirect:/";
-    }
+
 }
